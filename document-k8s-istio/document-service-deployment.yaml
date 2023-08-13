@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: document-deployment
-          image: blackrock30/document-service:2.2
+          image: blackrock30/document-service:2.3
           ports:
             - containerPort: 9003
           resources:
