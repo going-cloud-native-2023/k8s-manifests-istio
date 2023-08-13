@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prestation-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prestation-deployment
+  template:
+    metadata:
+      name: prestation-deployment
+      labels:
+        app: prestation-deployment
+    spec:
+      containers:
+        - name: prestation-deployment
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres_password
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: hostname-config
+                  key: postgres_host
+          image: blackrock30/prestation-service:2.2
+          ports:
+            - containerPort: 9002
+          resources:
+            requests:
+              memory: "256Mi"     # Minimum amount of memory required by the pod
+              cpu: "3m"         # 100 milliCPU units (0.1 CPU core)
+            limits:
+              memory: "512Mi"     # Maximum amount of memory allowed by the pod
+              cpu: "10m"
+          imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: prestation-service
+spec:
+  selector:
+    app: prestation-deployment
+  ports:
+    - protocol: TCP
+      port: 9002
+      targetPort: 9002
+  type: NodePort

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: document-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: document-deployment
+  template:
+    metadata:
+      name: document-deployment
+      labels:
+        app: document-deployment
+    spec:
+      containers:
+        - name: document-deployment
+          image: blackrock30/document-service:2.2
+          ports:
+            - containerPort: 9003
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "3m"
+            limits:
+              memory: "512Mi"
+              cpu: "10m"
+          imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: document-service
+spec:
+  selector:
+    app: document-deployment
+  ports:
+    - protocol: TCP
+      port: 9003
+      targetPort: 9003
+  type: NodePort
